@@ -26,7 +26,10 @@ response = table.query(
         KeyConditionExpression=Key('category').eq(category) & Key('event_time').between(beginTime, endTime)
     )
 
-print(response)
+campaigns = []
+for item in response['Items']:
+    campaigns.append("'" + item['campaign_id'] + "'")
 
 
-
+campaigns = ','.join(campaigns)
+print(campaigns)
