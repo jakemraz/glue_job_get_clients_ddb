@@ -17,7 +17,6 @@ class DecimalEncoder(json.JSONEncoder):
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(ddb_table)
 
-
 category = 'IT'
 beginTime = 1576565000 # Tue, Dec 17, 2019 4:16:40 PM GMT+09:00
 endTime = 1576569000 # Tue, Dec 17, 2019 4:50:00PM GTM+09:00
@@ -29,7 +28,10 @@ response = table.query(
 campaigns = []
 for item in response['Items']:
     campaigns.append("'" + item['campaign_id'] + "'")
-
-
 campaigns = ','.join(campaigns)
-print(campaigns)
+#print(campaigns)
+
+spark_sql = 'select client.client_id as client_id, count(*) \
+    as cnt from "pinpoint_campaign"."pinpoint_1127" where attributes.campaign_id in (%s) \
+    and event_type = \'_campaign.opened_notification\' group by client.client_id'%campaigns
+print(spark_sql)
